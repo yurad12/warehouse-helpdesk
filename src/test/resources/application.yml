@@ -1,4 +1,11 @@
 spring:
+  datasource:
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/warehouse_helpdesk_test}
+    username: ${TEST_DB_USERNAME:${DB_USERNAME:${user.name}}}
+    password: ${TEST_DB_PASSWORD:${DB_PASSWORD:}}
+  sql:
+    init:
+      mode: always
   ai:
     openai:
       api-key: ${OPENAI_API_KEY:test-openai-api-key}
