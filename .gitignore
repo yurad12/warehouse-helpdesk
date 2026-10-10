@@ -38,3 +38,8 @@ out/
 
 ### Local workspace ###
 .local/
+
+### Local environment ###
+.env
+.env.*
+!.env.example
