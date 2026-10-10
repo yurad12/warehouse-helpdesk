@@ -8,7 +8,7 @@ import com.skala.warehouse_helpdesk.repository.TicketRepository;
 
 @Service
 public class TicketService {
-    
+
     private final PalletRepository palletRepository;
     private final TicketRepository ticketRepository;
 
@@ -18,14 +18,21 @@ public class TicketService {
     }
 
     public Ticket createHoldTicket(
-        String palletId,
-        String warehouseId,
-        String reason
-    ) {
+            String palletId,
+            String warehouseId,
+            String reason) {
         palletRepository
-            .findByIdAndWarehouseId(palletId, warehouseId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 팔레트를 찾을 수 없습니다."));
-        
-            return ticketRepository.save(palletId, warehouseId, reason);
+                .findByIdAndWarehouseId(palletId, warehouseId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 팔레트를 찾을 수 없습니다."));
+
+        String normalizedReason = normalizeReason(reason);
+
+        return ticketRepository
+                .findPendingTicket(palletId, warehouseId, normalizedReason)
+                .orElseGet(() -> ticketRepository.save(palletId, warehouseId, normalizedReason));
+    }
+
+    private String normalizeReason(String reason) {
+        return reason == null ? "" : reason.trim().replaceAll("\\s+", " ").toLowerCase();
     }
 }
