@@ -1,5 +1,6 @@
 package com.skala.warehouse_helpdesk.repository;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +27,12 @@ public class TicketRepository {
                 palletId,
                 warehouseId,
                 reason,
-                "PENDING");
+                "PENDING",
+                null,
+                null,
+                null,
+                null,
+                false);
 
         tickets.put(ticketNo, ticket);
 
@@ -48,5 +54,28 @@ public class TicketRepository {
 
     public Ticket findByTicketNo(String ticketNo) {
         return tickets.get(ticketNo);
+    }
+
+    public Ticket resolve(
+            Ticket ticket,
+            String resolutionSummary,
+            String actionTaken,
+            String resolvedBy,
+            Instant resolvedAt,
+            boolean reusable) {
+        Ticket resolvedTicket = new Ticket(
+                ticket.ticketNo(),
+                ticket.palletId(),
+                ticket.warehouseId(),
+                ticket.reason(),
+                "RESOLVED",
+                resolutionSummary,
+                actionTaken,
+                resolvedBy,
+                resolvedAt,
+                reusable);
+
+        tickets.put(resolvedTicket.ticketNo(), resolvedTicket);
+        return resolvedTicket;
     }
 }
