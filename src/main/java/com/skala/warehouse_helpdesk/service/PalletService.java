@@ -7,7 +7,7 @@ import com.skala.warehouse_helpdesk.repository.PalletRepository;
 
 @Service
 public class PalletService {
-    
+
     private final PalletRepository palletRepository;
 
     public PalletService(PalletRepository palletRepository) {
@@ -18,5 +18,5 @@ public class PalletService {
         return palletRepository
                 .findByIdAndWarehouseId(palletId, warehouseId)
                 .orElseThrow(() -> new IllegalArgumentException("팔레트를 찾을 수 없습니다."));
-    }    
+    }
 }
