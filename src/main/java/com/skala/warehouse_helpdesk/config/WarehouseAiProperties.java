@@ -14,7 +14,9 @@ public record WarehouseAiProperties(
             int topK,
             int maxTopK,
             int previewLength,
-            double similarityThreshold) {
+            double similarityThreshold,
+            int caseTopK,
+            double caseSimilarityThreshold) {
     }
 
     public record Memory(
