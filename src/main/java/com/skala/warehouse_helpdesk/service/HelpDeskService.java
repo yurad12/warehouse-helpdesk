@@ -161,7 +161,8 @@ public class HelpDeskService {
         Map<String, Object> metadata = document.getMetadata();
         return new ChatSource(
                 metadataValue(metadata, "source"),
-                metadataValue(metadata, "version"));
+                metadataValue(metadata, "version"),
+                metadataValue(metadata, "documentType"));
     }
 
     private String metadataValue(Map<String, Object> metadata, String key) {
