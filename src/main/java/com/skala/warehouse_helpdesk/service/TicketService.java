@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.skala.warehouse_helpdesk.domain.Ticket;
+import com.skala.warehouse_helpdesk.rag.ResolutionCaseIndexService;
 import com.skala.warehouse_helpdesk.repository.PalletRepository;
 import com.skala.warehouse_helpdesk.repository.TicketRepository;
 
@@ -18,10 +19,15 @@ public class TicketService {
 
     private final PalletRepository palletRepository;
     private final TicketRepository ticketRepository;
+    private final ResolutionCaseIndexService resolutionCaseIndexService;
 
-    public TicketService(PalletRepository palletRepository, TicketRepository ticketRepository) {
+    public TicketService(
+            PalletRepository palletRepository,
+            TicketRepository ticketRepository,
+            ResolutionCaseIndexService resolutionCaseIndexService) {
         this.palletRepository = palletRepository;
         this.ticketRepository = ticketRepository;
+        this.resolutionCaseIndexService = resolutionCaseIndexService;
     }
 
     public Ticket createHoldTicket(
@@ -68,6 +74,10 @@ public class TicketService {
                     Instant.now(),
                     reusable);
 
+            if (resolvedTicket.reusable()) {
+                indexResolutionCase(resolvedTicket);
+            }
+
             log.info("event=ticket_resolution ticketNo={} warehouseId={} resolvedBy={} reusable={} status=OK",
                     ticketNo,
                     warehouseId,
@@ -88,6 +98,18 @@ public class TicketService {
 
     private String normalizeReason(String reason) {
         return reason == null ? "" : reason.trim().replaceAll("\\s+", " ").toLowerCase();
+    }
+
+    private void indexResolutionCase(Ticket ticket) {
+        try {
+            resolutionCaseIndexService.index(ticket);
+        }
+        catch (RuntimeException exception) {
+            log.warn("event=resolution_case_index ticketNo={} warehouseId={} status=FAIL reason={}",
+                    ticket.ticketNo(),
+                    ticket.warehouseId(),
+                    exception.getClass().getSimpleName());
+        }
     }
 
     private String requireText(String value, String fieldName) {

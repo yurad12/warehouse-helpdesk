@@ -100,6 +100,17 @@ public class TicketRepository {
                 .orElse(null);
     }
 
+    public List<Ticket> findReusableResolvedTickets(String warehouseId) {
+        return jdbcTemplate.query(
+                """
+                SELECT * FROM tickets
+                WHERE warehouse_id = ? AND status = 'RESOLVED' AND reusable = TRUE
+                ORDER BY resolved_at
+                """,
+                TICKET_ROW_MAPPER,
+                warehouseId);
+    }
+
     public Ticket resolve(
             Ticket ticket,
             String resolutionSummary,
