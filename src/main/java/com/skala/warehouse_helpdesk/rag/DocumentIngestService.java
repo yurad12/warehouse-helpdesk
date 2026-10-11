@@ -30,7 +30,7 @@ public class DocumentIngestService {
                 .stream()
                 .map(document -> document.mutate()
                         .metadata("source", source)
-                        .metadata("docType", "warehouse-policy")
+                        .metadata("documentType", "POLICY")
                         .metadata("dept", "operation")
                         .metadata("version", LocalDate.now().toString())
                         .build())
